@@ -7,7 +7,7 @@ from aiogram.filters import CommandStart
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-CHANNEL_URL = "https://t.me/novahubua"
+CHANNEL_URL = "https://t.me/mklochkoua"
 CHAT_URL = "https://t.me/+69ABIP-7Ft0yOTEy"
 
 if not BOT_TOKEN:
