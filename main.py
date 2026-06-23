@@ -1,19 +1,23 @@
 import os
 import asyncio
+from aiohttp import web
 from aiogram import Bot, Dispatcher, F
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import CommandStart
 
-BOT_TOKEN = os.getenv("8921304998:AAE5RjCZeU09xAUGnmgYRIDQy_2yaYksTjs")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-CHANNEL_URL = "https://t.me/mklochkoua"
+CHANNEL_URL = "https://t.me/novahubua"
 CHAT_URL = "https://t.me/+69ABIP-7Ft0yOTEy"
+
+if not BOT_TOKEN:
+    raise RuntimeError("BOT_TOKEN не знайдено. Додай змінну BOT_TOKEN в Render Environment.")
 
 bot = Bot(token=BOT_TOKEN)
 dp = Dispatcher()
 
 
-def menu():
+def main_menu():
     return InlineKeyboardMarkup(inline_keyboard=[
         [
             InlineKeyboardButton(text="📱 Android", callback_data="android"),
@@ -45,8 +49,8 @@ async def start(message: Message):
         "🌐 MikroTik та мережі\n"
         "🔧 Ремонт флешок і SSD\n"
         "🤖 Власні розробки\n\n"
-        "Оберіть розділ:",
-        reply_markup=menu()
+        "Оберіть потрібний розділ:",
+        reply_markup=main_menu()
     )
 
 
@@ -63,14 +67,27 @@ async def callbacks(call: CallbackQuery):
 
     await call.message.edit_text(
         texts.get(call.data, "Розділ у розробці."),
-        reply_markup=menu()
+        reply_markup=main_menu()
     )
     await call.answer()
 
 
+async def health(request):
+    return web.Response(text="MKLOCHKO UA Bot is running")
+
+
+async def run_web_server():
+    app = web.Application()
+    app.router.add_get("/", health)
+    runner = web.AppRunner(app)
+    await runner.setup()
+    port = int(os.getenv("PORT", 10000))
+    site = web.TCPSite(runner, "0.0.0.0", port)
+    await site.start()
+
+
 async def main():
-    if not BOT_TOKEN:
-        raise RuntimeError("BOT_TOKEN не знайдено")
+    await run_web_server()
     await dp.start_polling(bot)
 
 
